@@ -133,6 +133,8 @@ const App = {
   },
 
   navigate(viewName) {
+    this.closeMobileSidebar('pax');
+    this.closeMobileSidebar('admin');
     this.activeView = viewName;
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
 
@@ -596,6 +598,7 @@ const App = {
   },
 
   async openFlightStatusModal() {
+    this.closeMobileSidebar('pax');
     try {
       const flights = await API.publicFlights();
       const tbody = document.getElementById('public-flight-table-body');
@@ -617,8 +620,24 @@ const App = {
     }
   },
 
+  // ==================== MOBILE SIDEBAR CONTROLS ====================
+  openMobileSidebar(type) {
+    const sidebar = document.getElementById(`${type}-sidebar`);
+    const overlay = document.getElementById(`${type}-sidebar-overlay`);
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (overlay) overlay.classList.add('active');
+  },
+
+  closeMobileSidebar(type) {
+    const sidebar = document.getElementById(`${type}-sidebar`);
+    const overlay = document.getElementById(`${type}-sidebar-overlay`);
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('active');
+  },
+
   // ==================== PASSENGER DASHBOARD ====================
   switchPassengerPanel(panel) {
+    this.closeMobileSidebar('pax');
     const showComplaints = panel === 'complaints';
     const home = document.getElementById('pax-home-panel');
     const complaints = document.getElementById('pax-complaints-panel');
@@ -896,6 +915,7 @@ const App = {
   },
 
   switchAdminTab(tabName) {
+    this.closeMobileSidebar('admin');
     this.adminTab = tabName;
     document.querySelectorAll('[data-admin-tab]').forEach(t => {
       if (t.getAttribute('data-admin-tab') === tabName) {
