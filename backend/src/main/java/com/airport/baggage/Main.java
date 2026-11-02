@@ -11,6 +11,16 @@ public class Main {
 
     public static void main(String[] args) {
         int port = 8080;
+
+        // Support PORT environment variable (for Render.com and other cloud platforms)
+        String envPort = System.getenv("PORT");
+        if (envPort != null && !envPort.trim().isEmpty()) {
+            try {
+                port = Integer.parseInt(envPort.trim());
+            } catch (NumberFormatException ignored) {}
+        }
+
+        // Command-line argument overrides environment variable
         if (args.length > 0) {
             try {
                 port = Integer.parseInt(args[0]);

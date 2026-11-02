@@ -4,7 +4,9 @@ param(
 
 # PowerShell Startup Script for Intelligent Airport Baggage Handling and Routing System
 $ErrorActionPreference = "Stop"
-Push-Location $PSScriptRoot
+New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot "backend\web") | Out-Null
+Copy-Item -Path (Join-Path $PSScriptRoot "frontend\*") -Destination (Join-Path $PSScriptRoot "backend\web") -Recurse -Force
+Push-Location (Join-Path $PSScriptRoot "backend")
 try {
 
 Write-Host "=======================================================================" -ForegroundColor Cyan
@@ -17,13 +19,13 @@ if (-not (Get-Command javac -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-if (-not (Test-Path "bin")) {
-    New-Item -ItemType Directory -Path "bin" | Out-Null
+if (-not (Test-Path "build\classes")) {
+    New-Item -ItemType Directory -Force -Path "build\classes" | Out-Null
 }
 
 Write-Host "Compiling Java source files..." -ForegroundColor Yellow
-$javaSources = Get-ChildItem -Path "src" -Filter "*.java" -Recurse | ForEach-Object { $_.FullName }
-javac -encoding UTF-8 -d bin $javaSources
+$javaSources = Get-ChildItem -Path "src\main\java" -Filter "*.java" -Recurse | ForEach-Object { $_.FullName }
+javac -encoding UTF-8 -d build\classes $javaSources
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Compilation failed." -ForegroundColor Red
@@ -37,7 +39,7 @@ if ($CompileOnly) {
 
 Write-Host "Starting server on http://localhost:8080 ..." -ForegroundColor Cyan
 Start-Process "http://localhost:8080"
-java -cp bin com.airport.baggage.Main 8080
+java -cp build\classes com.airport.baggage.Main 8080
 }
 finally {
     Pop-Location

@@ -12,7 +12,7 @@ A modern, responsive, and robust website and simulation platform for an **Intell
     * **Initial Entry Screen**: Dedicated Welcome Gateway Page with passenger sign-in, account registration, and admin access cards before advancing into the main Home Page and operational dashboards.
     * **Interactive Visualizations**: Custom interactive SVG conveyor network visualizer with real-time route path animation and failover indicators.
   * **Backend**: Java 17 using native `com.sun.net.httpserver.HttpServer` with RESTful API endpoints, multi-threaded request processing, and role-based access control.
-  * **Persistence**: Pure CSV files (`data/`) managed with thread-safe file locking (`ReentrantReadWriteLock`).
+  * **Persistence**: Pure CSV files (`backend/data/`) managed with thread-safe file locking (`ReentrantReadWriteLock`).
 
 ---
 
@@ -102,7 +102,7 @@ The conveyor network models 11 operational nodes and 4 aircraft loading bays:
 
 ## 6. CSV Data Storage
 
-Data is stored persistently in the `data/` directory:
+Data is stored persistently in the `backend/data/` directory:
 
 1. `users.csv`: User credentials, roles (`PASSENGER`, `ADMIN`), and salted PBKDF2-HMAC-SHA256 password hashes. Existing salted SHA-256 records are upgraded after a successful login.
 2. `passengers.csv`: Passenger profiles linked to booking references.
@@ -134,30 +134,37 @@ The system includes an automated test runner (`ScenarioRunner.java`) verifying a
 | **7** | No valid route exists | When all routes to a destination bay are severed, system reports `ROUTE_FAILURE`. |
 | **8** | Passenger attempts to access another passenger's baggage | Role-based security returns `403 FORBIDDEN` (Strict ownership enforced). |
 
-The scenario runner is available through the test API endpoint; route and conveyor state changes persist in CSV files, so back up `data/` before running scenarios against important records.
+The scenario runner is available through the test API endpoint; route and conveyor state changes persist in CSV files, so back up `backend/data/` before running scenarios against important records.
 
 ---
 
-## 8. Preconfigured Demonstration Accounts
+## 8. Accounts and deployment safety
 
-* **Administrator Portal**:
-  * **Username**: `admin`
-  * **Password**: `admin123`
-  * Role: Airport Operations Admin (Full access to baggage management, routing studio, flight reassignments, conveyor toggles, and test suite).
-
-* **Passenger Portal**:
-  * **Username**: `rahul_sharma`
-  * **Password**: `pass123`
-  * Role: Passenger (Access to 11 registered bags for flights AI202, AI305, etc.).
-
-*New passengers can also register freely on the Passenger Registration page.*
+The application initializes demonstration data when its CSV files are missing or empty. Treat seeded demo accounts as development-only and replace their credentials and sample data before public deployment. Never commit real user data, passwords, API keys, or environment secrets.
 
 ---
 
-## 9. Running the Application Locally
+## 9. Project structure
+
+```text
+.
+├── frontend/                           # Static HTML, CSS, and JavaScript source
+├── backend/
+│   ├── src/main/java/com/airport/baggage/ # Java server, models, services, and tests
+│   ├── data/                            # CSV storage and sample data
+│   ├── build/classes/                   # Generated Java classes (ignored)
+│   └── web/                             # Generated runtime copy of frontend (ignored)
+├── Dockerfile
+├── render.yaml
+└── run.*                               # Windows and shell launch scripts
+```
+
+The project uses Java's standard library only; there is no Node package manifest or external Java dependency. `com.airport.baggage.Main` is the server entry point. Launch scripts and Docker stage `frontend/` into `backend/web/` because the existing server serves files relative to its working directory. The scenario runner is exposed at `/api/test/run-scenarios`; it changes CSV state, so use a disposable data directory when running it.
+
+## 10. Running the Application Locally
 
 ### Prerequisites
-* **Java Development Kit (JDK) 11 or higher** (Tested on Java 17).
+* **Java Development Kit (JDK) 17**.
 * No external libraries, databases, or build tools (like Maven or Gradle) are required.
 
 ### Quick Start (Windows)
@@ -165,20 +172,46 @@ Double-click `run.cmd` (or `run.bat`) or run in PowerShell:
 ```powershell
 .\run.ps1
 ```
-The script will compile all Java sources, start the backend on port `8080`, and launch your default browser to `http://localhost:8080`.
+The script compiles all Java sources, starts the backend on port `8080`, and launches your default browser to `http://localhost:8080`.
 To compile without starting the server, use `.\run.cmd --compile-only` or `.\run.ps1 -CompileOnly`.
 
-### Manual Start (Any Platform / Linux / macOS)
-1. Open terminal in the project root directory.
+### Manual Start (Linux / macOS)
+1. Open a terminal in the project root directory and stage the frontend for the existing server:
+   ```bash
+   mkdir -p backend/web
+   cp -R frontend/. backend/web/
+   ```
 2. Compile the source code:
    ```bash
-   javac -d bin $(find src -name "*.java")
+   cd backend
+   mkdir -p build/classes
+   javac -encoding UTF-8 -d build/classes $(find src/main/java -name "*.java")
    ```
 3. Run the application:
    ```bash
-   java -cp bin com.airport.baggage.Main 8080
+   java -cp build/classes com.airport.baggage.Main 8080
    ```
 4. Open your web browser and navigate to:
    ```
    http://localhost:8080
    ```
+
+## 11. Deployment (Render)
+
+The repository includes a Dockerfile and Render Blueprint configuration. To deploy:
+
+1. Push the repository to GitHub.
+2. In Render, choose **New → Blueprint**, connect the GitHub repository, and apply `render.yaml`.
+3. Wait for the Docker build and deployment to finish, then open the service URL shown by Render.
+
+Render supplies the `PORT` environment variable; the server uses it automatically. The included free web service is suitable for a demo, but its local filesystem is ephemeral and may be cleared on restarts or redeploys. The app stores writable state in CSV files, so production use requires durable storage and a backup plan; do not use the free instance for important user data. Replace the demo administrator account and sample data before a public production deployment.
+
+## 12. Push local changes to GitHub
+
+Review `git status` before staging so local CSV data or other unrelated changes are not pushed accidentally. Stage the project changes, commit, and push the current branch:
+
+```bash
+git add -A
+git commit -m "Organize project structure and deployment"
+git push
+```

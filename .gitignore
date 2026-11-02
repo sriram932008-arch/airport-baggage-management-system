@@ -1,0 +1,29 @@
+# Java build output
+build/
+target/
+out/
+bin/
+*.class
+*.log
+/backend/web/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Legacy root-level runtime data
+/data/
