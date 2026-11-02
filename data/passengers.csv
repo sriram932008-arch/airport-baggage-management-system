@@ -1,0 +1,5 @@
+passengerId,userId,fullName,email,mobileNumber,bookingReference
+PAX-1001,USR-101,Rahul Sharma,rahul.sharma@example.com,+919820011223,BK-7890
+PAX-1002,USR-102,Ananya Patel,ananya.patel@example.com,+919820033445,BK-4512
+PAX-1003,USR-103,David Miller,david.miller@example.com,+919820055667,BK-9931
+PAX-1004,USR-50638,Sriram T.R,sriram932008@gmail.com,9363519648,BK-4243

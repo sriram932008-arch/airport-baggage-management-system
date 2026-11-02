@@ -1,0 +1,5 @@
+bayId,bayName,assignedFlight,capacity,status
+LB1,Loading Bay 1 (Gate A1),AI305,150,ACTIVE
+LB2,Loading Bay 2 (Gate A2),AI305,150,ACTIVE
+LB3,Loading Bay 3 (Gate B1),AI410,150,ACTIVE
+LB4,Loading Bay 4 (Gate B2),AI520,180,ACTIVE
