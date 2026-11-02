@@ -1,5 +1,0 @@
-flightNumber,destination,scheduledDeparture,loadingCutoff,cutoffMinutesRemaining,assignedBayId,status
-AI202,London Heathrow (LHR),10:30,10:00,35.0,LB1,BOARDING
-AI305,Dubai International (DXB),11:15,10:55,52.0,LB1,SCHEDULED
-AI410,Singapore Changi (SIN),09:50,09:20,12.0,LB3,BOARDING
-AI520,New York JFK (JFK),12:00,11:30,95.0,LB4,SCHEDULED

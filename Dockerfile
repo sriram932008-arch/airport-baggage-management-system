@@ -1,24 +1,25 @@
 # Use official OpenJDK 17 slim image
 FROM eclipse-temurin:17-jdk-alpine
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Keep the application working directory separate from the frontend source.
-WORKDIR /app/backend
-COPY backend/src/main/java/ src/main/java/
-COPY frontend/ web/
+# Copy Java source code
+COPY backend/src/main/java/ src/
 
-# Create build output and runtime data directories
-RUN mkdir -p build/classes data
+# Copy web assets into the location the server expects (web/)
+COPY backend/web/ web/
+
+# Create build output and data directories
+RUN mkdir -p bin data
 
 # Compile all Java source files
-RUN find src/main/java -name "*.java" > /tmp/sources.txt && \
-    javac -encoding UTF-8 -d build/classes @/tmp/sources.txt && \
-    rm /tmp/sources.txt
+RUN find src -name "*.java" > sources.txt && \
+    javac -encoding UTF-8 -d bin @sources.txt && \
+    rm sources.txt
 
-# Expose the port (Render uses PORT env variable)
+# Expose default port (Render injects PORT env var)
 EXPOSE 8080
 
-# Start the server – use PORT env var if set (Render), otherwise 8080
-CMD ["sh", "-c", "java -cp build/classes com.airport.baggage.Main ${PORT:-8080}"]
+# Run the server — PORT env var is read by Main.java
+CMD ["sh", "-c", "java -cp bin com.airport.baggage.Main"]

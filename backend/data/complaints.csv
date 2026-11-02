@@ -1,2 +1,0 @@
-ComplaintID,PassengerID,BaggageID,Category,Subject,Description,Status,AdminResponse,CreatedAt,UpdatedAt
-CMP-49178B93-206,PAX-1001,,BAGGAGE_DELAY,Delayed bag at terminal,My bag has been delayed for over 30 minutes at terminal A. Please check.,UNDER_REVIEW,We are investigating your delayed baggage. Expected resolution within 2 hours.,2026-11-02 09:13,2026-11-02 09:14

@@ -1,11 +1,9 @@
-# Java build output
-build/
-target/
-out/
+# Compiled class files
 bin/
+build/
+backend/bin/
+backend/build/
 *.class
-*.log
-/backend/web/
 
 # IDE
 .idea/
@@ -20,10 +18,6 @@ bin/
 Thumbs.db
 desktop.ini
 
-# Environment and local secrets
-.env
-.env.*
-!.env.example
-
-# Legacy root-level runtime data
-/data/
+# Data directory (auto-generated on first run)
+data/
+backend/data/
